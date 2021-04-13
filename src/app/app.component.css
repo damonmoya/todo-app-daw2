@@ -1,0 +1,15 @@
+.mat-toolbar, h1 {
+  margin-bottom: 10px;
+}
+
+table {
+  width: 40%;
+}
+  
+th.mat-sort-header-sorted {
+  color: black;
+}
+  
+h1, table {
+  margin-left: 10px;
+}

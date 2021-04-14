@@ -1,0 +1,18 @@
+<mat-form-field>
+    <mat-label>Nombre de la tarea</mat-label>
+    <input matInput placeholder="Nombre de la tarea..." cdkFocusInitial [(ngModel)]="data.task.title" required>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-label>Prioridad</mat-label>
+  <mat-select required cdkFocusInitial [(ngModel)]="data.task.priority">
+    <mat-option value="Baja">Baja</mat-option>
+    <mat-option value="Media">Media</mat-option>
+    <mat-option value="Alta">Alta</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div mat-dialog-actions>
+    <button mat-button [disabled]="data.task.title === ''" [mat-dialog-close]="{ task: data.task }">OK</button>
+    <button mat-button (click)="cancel()">Cancelar</button>
+</div>

@@ -1,6 +1,6 @@
 export interface Task {
     title: string;
-    priority: number;
+    priority: string;
     state: number;
     created_at: Date;
 }

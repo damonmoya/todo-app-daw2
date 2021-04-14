@@ -1,18 +1,13 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ChangeDetectorRef  } from '@angular/core';
 import { Task } from './task/task';
+import { MatTable } from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import {MatDialog} from '@angular/material/dialog';
+import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog.component';
 
 var d = new Date();
 d.setDate(d.getDate() - 1);
-
-const todos: Task[] = [
-  { title: 'Comprar leche', priority: 0, state: 0, created_at: new Date()},
-  { title: 'Pasear al perro', priority: 1, state: 1, created_at: d},
-  { title: 'Estudiar', priority: 0, state: 0, created_at: new Date()},
-  { title: 'Sacar la basura', priority: 2, state: 0, created_at: d},
-  { title: 'Limpiar la casa', priority: 2, state: 1, created_at: new Date()}
-];
 
 @Component({
   selector: 'app-root',
@@ -22,14 +17,48 @@ const todos: Task[] = [
 
 export class AppComponent implements AfterViewInit {
 
+  constructor(private dialog: MatDialog) {}
+
+  todos: Task[] = [
+    { title: 'Comprar leche', priority: "Baja", state: 0, created_at: new Date()},
+    { title: 'Pasear al perro', priority: "Media", state: 1, created_at: d},
+    { title: 'Estudiar', priority: "Baja", state: 0, created_at: new Date()},
+    { title: 'Sacar la basura', priority: "Alta", state: 0, created_at: d},
+    { title: 'Limpiar la casa', priority: "Alta", state: 1, created_at: new Date()}
+  ];
+
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at'];
 
-  dataSource = new MatTableDataSource(todos);
+  dataSource = new MatTableDataSource(this.todos);
+
+  @ViewChild(MatTable, { static: true })
+  table!: MatTable<any>;
 
   @ViewChild(MatSort)
   sort: MatSort = new MatSort;
 
   ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
+  newTask(): void {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '270px',
+      data: {
+        task: { title: '', priority: "Baja", state: 0, created_at: new Date()}
+      }
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: TaskDialogResult) => 
+        this.todos.push({ title: result.task.title, priority: result.task.priority, state: 0, created_at: new Date() }));
+    dialogRef
+      .afterClosed()
+      .subscribe(() => this.refreshTable());
+  }
+
+  refreshTable() {
+    this.dataSource = new MatTableDataSource(this.todos);
     this.dataSource.sort = this.sort;
   }
 

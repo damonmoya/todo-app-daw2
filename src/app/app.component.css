@@ -5,11 +5,37 @@
 table {
   width: 40%;
 }
+
+th {
+  color: black;
+  font-weight: bold;
+  font-size: 12pt;
+  background-color: cyan;
+}
   
 th.mat-sort-header-sorted {
   color: black;
 }
   
-h1, table {
+h1, table, .create-btn, .no-todos {
   margin-left: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.no-todos {
+  margin-top: 10px;
+  font-size: 18pt;
+}
+
+.low-priority {
+  color: green
+}
+
+.mid-priority {
+  color: rgb(223, 223, 25)
+}
+
+.high-priority {
+  color: red
 }

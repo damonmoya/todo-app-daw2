@@ -27,7 +27,7 @@ export class AppComponent implements AfterViewInit {
     { title: 'Limpiar la casa', priority: "Alta", state: 1, created_at: new Date()}
   ];
 
-  displayedColumns: string[] = ['title', 'priority', 'state', 'created_at'];
+  displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
 
   dataSource = new MatTableDataSource(this.todos);
 
@@ -39,6 +39,33 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  delete(task: Task): void {
+    const taskIndex = this.todos.indexOf(task);
+    this.todos.splice(taskIndex, 1);
+    this.refreshTable();
+  }
+
+  edit(task: Task): void {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '270px',
+      data: {
+        task,
+        enableDelete: true
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+      const taskIndex = this.todos.indexOf(task);
+      if (result.delete) {
+        this.todos.splice(taskIndex, 1);
+      } else {
+        this.todos[taskIndex] = task;
+      }
+    })
+    dialogRef
+      .afterClosed()
+      .subscribe(() => this.refreshTable());
   }
 
   newTask(): void {

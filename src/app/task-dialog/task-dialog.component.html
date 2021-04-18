@@ -13,6 +13,18 @@
 </mat-form-field>
 
 <div mat-dialog-actions>
-    <button mat-button [disabled]="data.task.title === ''" [mat-dialog-close]="{ task: data.task }">OK</button>
-    <button mat-button (click)="cancel()">Cancelar</button>
+    <button 
+      mat-button [disabled]="data.task.title === ''" 
+      [mat-dialog-close]="{ task: data.task }"
+      color="primary">OK
+    </button>
+    <button mat-button (click)="cancel()" color="accent">Cancelar</button>
+    <button
+      *ngIf="data.enableDelete"
+      mat-fab
+      color="warn"
+      aria-label="Delete"
+      [mat-dialog-close]="{ task: data.task, delete: true }">
+      <mat-icon>delete</mat-icon>
+    </button>
 </div>

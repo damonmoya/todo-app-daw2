@@ -1,14 +1,14 @@
 <mat-form-field>
     <mat-label>Nombre de la tarea</mat-label>
-    <input matInput placeholder="Nombre de la tarea..." cdkFocusInitial [(ngModel)]="data.task.title" required>
+    <input matInput placeholder="Nombre de la tarea..." [(ngModel)]="data.task.title" required>
 </mat-form-field>
 
 <mat-form-field appearance="fill">
   <mat-label>Prioridad</mat-label>
-  <mat-select required cdkFocusInitial [(ngModel)]="data.task.priority">
-    <mat-option value="Baja">Baja</mat-option>
-    <mat-option value="Media">Media</mat-option>
-    <mat-option value="Alta">Alta</mat-option>
+  <mat-select required [(ngModel)]="data.task.priority">
+    <mat-option [value]="0">Baja</mat-option>
+    <mat-option [value]="1">Media</mat-option>
+    <mat-option [value]="2">Alta</mat-option>
   </mat-select>
 </mat-form-field>
 
@@ -18,13 +18,6 @@
       [mat-dialog-close]="{ task: data.task }"
       color="primary">OK
     </button>
-    <button mat-button (click)="cancel()" color="accent">Cancelar</button>
-    <button
-      *ngIf="data.enableDelete"
-      mat-fab
-      color="warn"
-      aria-label="Delete"
-      [mat-dialog-close]="{ task: data.task, delete: true }">
-      <mat-icon>delete</mat-icon>
-    </button>
+    <button *ngIf="!data.enableDelete" mat-button [mat-dialog-close]="true" color="accent">Cancelar</button>
+    <button *ngIf="data.enableDelete" mat-button [mat-dialog-close]="{ task: data.task, cancel: true }" color="accent">Cancelar</button>
 </div>

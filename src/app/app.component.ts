@@ -20,11 +20,11 @@ export class AppComponent implements AfterViewInit {
   constructor(private dialog: MatDialog) {}
 
   todos: Task[] = [
-    { title: 'Comprar leche', priority: "Baja", state: 0, created_at: new Date()},
-    { title: 'Pasear al perro', priority: "Media", state: 1, created_at: d},
-    { title: 'Estudiar', priority: "Baja", state: 0, created_at: new Date()},
-    { title: 'Sacar la basura', priority: "Alta", state: 0, created_at: d},
-    { title: 'Limpiar la casa', priority: "Alta", state: 1, created_at: new Date()}
+    { title: 'Comprar leche', priority: 0, state: 0, created_at: new Date()},
+    { title: 'Pasear al perro', priority: 1, state: 1, created_at: d},
+    { title: 'Estudiar', priority: 0, state: 0, created_at: new Date()},
+    { title: 'Sacar la basura', priority: 2, state: 0, created_at: d},
+    { title: 'Limpiar la casa', priority: 2, state: 1, created_at: new Date()}
   ];
 
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
@@ -48,7 +48,14 @@ export class AppComponent implements AfterViewInit {
   }
 
   edit(task: Task): void {
+    const old_task = { 
+      title: task.title, 
+      priority: task.priority, 
+      state: task.state, 
+      created_at: task.created_at
+    }
     const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
       width: '270px',
       data: {
         task,
@@ -57,11 +64,11 @@ export class AppComponent implements AfterViewInit {
     });
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
       const taskIndex = this.todos.indexOf(task);
-      if (result.delete) {
-        this.todos.splice(taskIndex, 1);
-      } else {
+      if (result.cancel) {
+        task = old_task;
         this.todos[taskIndex] = task;
-      }
+      }  
+      this.todos[taskIndex] = task;
     })
     dialogRef
       .afterClosed()
@@ -70,9 +77,10 @@ export class AppComponent implements AfterViewInit {
 
   newTask(): void {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
       width: '270px',
       data: {
-        task: { title: '', priority: "Baja", state: 0, created_at: new Date()}
+        task: { title: '', priority: 0, state: 0, created_at: new Date()}
       }
     });
     dialogRef

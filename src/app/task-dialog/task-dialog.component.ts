@@ -34,6 +34,7 @@ export interface TaskDialogData {
 }
 
 export interface TaskDialogResult {
+  cancel: any;
   task: Task;
   delete?: boolean;
 }

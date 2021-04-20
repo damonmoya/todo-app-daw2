@@ -18,13 +18,17 @@ d.setDate(d.getDate() - 1);
 
 export class AppComponent implements OnInit {
   todos = this.store.collection('todos').valueChanges({ idField: 'id' });
+  done_todos = this.store.collection('done_todos').valueChanges({ idField: 'id' });
   dataSource: any;
+  dataSource_finished: any;
 
   constructor(private dialog: MatDialog, private store: AngularFirestore) {
     this.dataSource = new MatTableDataSource();
+    this.dataSource_finished = new MatTableDataSource();
   }
 
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
+  displayedColumns_done: string[] = ['title', 'priority', 'state', 'created_at'];
 
   @ViewChild(MatTable, { static: true })
   table!: MatTable<any>;
@@ -36,11 +40,11 @@ export class AppComponent implements OnInit {
     this.refreshTable()
   }
 
-  delete(task: Task): void {
-    this.store.collection('todos').doc(task.id).delete();
+  delete(task: Task, list: string): void {
+    this.store.collection(list).doc(task.id).delete();
   }
 
-  edit(task: Task): void {
+  edit(task: Task, list: string): void {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       disableClose: true,
       width: '270px',
@@ -51,7 +55,7 @@ export class AppComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
       if (!result.cancel) {
-        this.store.collection('todos').doc(task.id).update(task);
+        this.store.collection(list).doc(task.id).update(task);
       }  
       this.refreshTable();
     })
@@ -74,6 +78,8 @@ export class AppComponent implements OnInit {
   done(task: Task): void {
     task.state = 2;
     this.store.collection('todos').doc(task.id).update(task);
+    this.store.collection('todos').doc(task.id).delete();
+    this.store.collection('done_todos').add(task);
     this.refreshTable();
   }
 
@@ -81,6 +87,10 @@ export class AppComponent implements OnInit {
     this.todos.subscribe((task: any)=> {
       ​​​​​this.dataSource = new MatTableDataSource(task);
       this.dataSource.sort = this.sort;
+    })
+    this.done_todos.subscribe((task: any)=> {
+      ​​​​​this.dataSource_finished = new MatTableDataSource(task);
+      this.dataSource_finished.sort = this.sort;
     })
   }
 

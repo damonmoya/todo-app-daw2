@@ -28,16 +28,21 @@ export class AppComponent implements OnInit {
   }
 
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
-  displayedColumns_done: string[] = ['title', 'priority', 'state', 'created_at'];
 
   @ViewChild(MatTable, { static: true })
   table!: MatTable<any>;
 
-  @ViewChild(MatSort)
-  sort: MatSort = new MatSort;
+  @ViewChild('sorter1')
+  sorter1: MatSort = new MatSort;
+
+  @ViewChild('sorter2')
+  sorter2: MatSort = new MatSort;
 
   ngOnInit() {
-    this.refreshTable()
+    this.refreshTodoTable()
+    this.refreshDoneTable()
+    this.refreshTodoTable()
+    this.refreshDoneTable()
   }
 
   delete(task: Task, list: string): void {
@@ -57,7 +62,7 @@ export class AppComponent implements OnInit {
       if (!result.cancel) {
         this.store.collection(list).doc(task.id).update(task);
       }  
-      this.refreshTable();
+      this.refreshTodoTable();
     })
   }
 
@@ -80,17 +85,30 @@ export class AppComponent implements OnInit {
     this.store.collection('todos').doc(task.id).update(task);
     this.store.collection('todos').doc(task.id).delete();
     this.store.collection('done_todos').add(task);
-    this.refreshTable();
+    this.refreshTodoTable();
+    this.refreshDoneTable();
   }
 
-  refreshTable() {
+  restore(task: Task): void {
+    task.state = 1;
+    this.store.collection('done_todos').doc(task.id).update(task);
+    this.store.collection('done_todos').doc(task.id).delete();
+    this.store.collection('todos').add(task);
+    this.refreshTodoTable();
+    this.refreshDoneTable();
+  }
+
+  refreshTodoTable() {
     this.todos.subscribe((task: any)=> {
       ​​​​​this.dataSource = new MatTableDataSource(task);
-      this.dataSource.sort = this.sort;
+      this.dataSource.sort = this.sorter1;
     })
+  }
+
+  refreshDoneTable() {
     this.done_todos.subscribe((task: any)=> {
       ​​​​​this.dataSource_finished = new MatTableDataSource(task);
-      this.dataSource_finished.sort = this.sort;
+      this.dataSource_finished.sort = this.sorter2;
     })
   }
 

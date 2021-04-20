@@ -30,7 +30,7 @@ export class TaskDialogComponent implements OnInit {
 
 export interface TaskDialogData {
   task: Task;
-  enableDelete: boolean;
+  editing: boolean;
 }
 
 export interface TaskDialogResult {

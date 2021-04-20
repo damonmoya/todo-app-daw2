@@ -28,14 +28,18 @@ h1, table, .create-btn, .no-todos {
   font-size: 18pt;
 }
 
-.low-priority {
+.green-color {
   color: green
 }
 
-.mid-priority {
+.orange-color {
   color: orange
 }
 
-.high-priority {
+.red-color {
   color: red
+}
+
+.grey-color {
+  color: grey
 }

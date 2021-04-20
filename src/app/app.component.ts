@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
       width: '270px',
       data: {
         task,
-        enableDelete: true
+        editing: true
       }
     });
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
@@ -69,6 +69,12 @@ export class AppComponent implements OnInit {
       .afterClosed()
       .subscribe((result: TaskDialogResult) => 
         this.store.collection('todos').add(result.task));
+  }
+
+  done(task: Task): void {
+    task.state = 2;
+    this.store.collection('todos').doc(task.id).update(task);
+    this.refreshTable();
   }
 
   refreshTable() {

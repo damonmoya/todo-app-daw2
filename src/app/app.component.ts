@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ViewChild, ChangeDetectorRef  } from '@angular/core';
+import { Component, ViewChild, OnInit  } from '@angular/core';
 import { Task } from './task/task';
 import { MatTable } from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatDialog} from '@angular/material/dialog';
 import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog.component';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 var d = new Date();
 d.setDate(d.getDate() - 1);
@@ -15,21 +16,15 @@ d.setDate(d.getDate() - 1);
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
+  todos = this.store.collection('todos').valueChanges({ idField: 'id' });
+  dataSource: any;
 
-  constructor(private dialog: MatDialog) {}
-
-  todos: Task[] = [
-    { title: 'Comprar leche', priority: 0, state: 0, created_at: new Date()},
-    { title: 'Pasear al perro', priority: 1, state: 1, created_at: d},
-    { title: 'Estudiar', priority: 0, state: 0, created_at: new Date()},
-    { title: 'Sacar la basura', priority: 2, state: 0, created_at: d},
-    { title: 'Limpiar la casa', priority: 2, state: 1, created_at: new Date()}
-  ];
+  constructor(private dialog: MatDialog, private store: AngularFirestore) {
+    this.dataSource = new MatTableDataSource();
+  }
 
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
-
-  dataSource = new MatTableDataSource(this.todos);
 
   @ViewChild(MatTable, { static: true })
   table!: MatTable<any>;
@@ -37,23 +32,15 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(MatSort)
   sort: MatSort = new MatSort;
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+  ngOnInit() {
+    this.refreshTable()
   }
 
   delete(task: Task): void {
-    const taskIndex = this.todos.indexOf(task);
-    this.todos.splice(taskIndex, 1);
-    this.refreshTable();
+    this.store.collection('todos').doc(task.id).delete();
   }
 
   edit(task: Task): void {
-    const old_task = { 
-      title: task.title, 
-      priority: task.priority, 
-      state: task.state, 
-      created_at: task.created_at
-    }
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       disableClose: true,
       width: '270px',
@@ -63,16 +50,11 @@ export class AppComponent implements AfterViewInit {
       }
     });
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
-      const taskIndex = this.todos.indexOf(task);
-      if (result.cancel) {
-        task = old_task;
-        this.todos[taskIndex] = task;
+      if (!result.cancel) {
+        this.store.collection('todos').doc(task.id).update(task);
       }  
-      this.todos[taskIndex] = task;
+      this.refreshTable();
     })
-    dialogRef
-      .afterClosed()
-      .subscribe(() => this.refreshTable());
   }
 
   newTask(): void {
@@ -86,15 +68,14 @@ export class AppComponent implements AfterViewInit {
     dialogRef
       .afterClosed()
       .subscribe((result: TaskDialogResult) => 
-        this.todos.push({ title: result.task.title, priority: result.task.priority, state: 0, created_at: new Date() }));
-    dialogRef
-      .afterClosed()
-      .subscribe(() => this.refreshTable());
+        this.store.collection('todos').add(result.task));
   }
 
   refreshTable() {
-    this.dataSource = new MatTableDataSource(this.todos);
-    this.dataSource.sort = this.sort;
+    this.todos.subscribe((task: any)=> {
+      ​​​​​this.dataSource = new MatTableDataSource(task);
+      this.dataSource.sort = this.sort;
+    })
   }
 
 }

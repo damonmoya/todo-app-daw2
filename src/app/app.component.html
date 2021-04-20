@@ -3,126 +3,142 @@
   <span>Todo List</span>
 </mat-toolbar>
 
-<h1>LISTA DE TAREAS</h1>
+<div fxLayout="row" fxLayoutAlign=" start" fxLayoutGap="100px" class="no-todos">
+  <div>
+    <mat-card class="left-list">
 
-<div class="create-btn">
-  <button mat-flat-button color="primary" (click)="newTask()">
-    <mat-icon>add</mat-icon> Nueva Tarea
-  </button>
+    <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="100px" class="no-todos">
+      <h1>Tareas pendientes</h1>
+      <div class="create-btn">
+        <button mat-flat-button color="primary" (click)="newTask()">
+          <mat-icon>add</mat-icon> Nueva Tarea
+        </button>
+      </div>
+      <div *ngIf="dataSource.data.length == 0" class="no-todos">
+        <strong>¡No hay tareas por hacer!</strong>
+      </div>
+    </div>      
+    
+    <table mat-table *ngIf="dataSource.data.length > 0" [dataSource]="dataSource" matSort class="mat-elevation-z8">
+    
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tarea </th>
+        <td mat-cell *matCellDef="let todo"> <strong>{{todo.title}}</strong> </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Prioridad </th>
+        <td mat-cell *matCellDef="let todo">
+          <div *ngIf="todo.priority === 0">  
+            <mat-icon class="green-color">error</mat-icon> 
+            <mat-icon>error_outline</mat-icon>
+            <mat-icon>error_outline</mat-icon>     
+          </div>
+          <div *ngIf="todo.priority === 1">  
+            <mat-icon class="orange-color">error</mat-icon> 
+            <mat-icon class="orange-color">error</mat-icon>
+            <mat-icon >error_outline</mat-icon>     
+          </div>
+          <div *ngIf="todo.priority === 2" class="red-color">   
+            <mat-icon>error</mat-icon>
+            <mat-icon>error</mat-icon>
+            <mat-icon>error</mat-icon>     
+          </div>
+        </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+        <td mat-cell *matCellDef="let todo"> 
+          <div *ngIf="todo.state === 0"> Pendiente </div>
+          <div *ngIf="todo.state === 1"> En proceso </div>
+          <div *ngIf="todo.state === 2"> Hecho </div>
+        </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Creada en </th>
+        <td mat-cell *matCellDef="let todo"> {{todo.created_at.toMillis() | date:'yyyy/MM/dd h:mm:ss a'}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let todo"> 
+          <button mat-icon-button (click)="edit(todo, 'todos')">
+            <mat-icon color="primary">create</mat-icon> 
+          </button>
+          <button mat-icon-button (click)="delete(todo, 'todos')">
+            <mat-icon color="warn">delete</mat-icon> 
+          </button>
+          <button mat-icon-button (click)="done(todo)" [disabled]="todo.state === 0">
+            <mat-icon [ngClass]="todo.state === 0 ? 'gray-color':'green-color'">check_circle</mat-icon> 
+          </button>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="todo-table"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    </mat-card>
+    
+  </div>
+  
+  <div>
+    <mat-card class="rigth-list">
+      <h1>Tareas completadas</h1>
+    <div *ngIf="dataSource_finished.data.length == 0" class="no-todos">
+      <strong>¡No hay tareas completadas!</strong>
+    </div>
+    
+    <table mat-table *ngIf="dataSource_finished.data.length > 0" [dataSource]="dataSource_finished" matSort class="mat-elevation-z8">
+    
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tarea </th>
+        <td mat-cell *matCellDef="let todo"> <strong>{{todo.title}}</strong> </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Prioridad </th>
+        <td mat-cell *matCellDef="let todo">
+          <div *ngIf="todo.priority === 0">  
+            <mat-icon class="green-color">error</mat-icon> 
+            <mat-icon>error_outline</mat-icon>
+            <mat-icon>error_outline</mat-icon>     
+          </div>
+          <div *ngIf="todo.priority === 1">  
+            <mat-icon class="orange-color">error</mat-icon> 
+            <mat-icon class="orange-color">error</mat-icon>
+            <mat-icon >error_outline</mat-icon>     
+          </div>
+          <div *ngIf="todo.priority === 2" class="red-color">   
+            <mat-icon>error</mat-icon>
+            <mat-icon>error</mat-icon>
+            <mat-icon>error</mat-icon>     
+          </div>
+        </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+        <td mat-cell *matCellDef="let todo"> 
+          <div *ngIf="todo.state === 0"> Pendiente </div>
+          <div *ngIf="todo.state === 1"> En proceso </div>
+          <div *ngIf="todo.state === 2"> Hecho </div>
+        </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Creada en </th>
+        <td mat-cell *matCellDef="let todo"> {{todo.created_at.toMillis() | date:'yyyy/MM/dd h:mm:ss a'}} </td>
+      </ng-container>
+     
+      <tr mat-header-row *matHeaderRowDef="displayedColumns_done" class="done-table"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns_done;"></tr>
+    </table>
+    </mat-card>
+    
+  </div>
 </div>
 
-<div *ngIf="dataSource.data.length == 0" class="no-todos">
-  <strong>¡No hay tareas por hacer!</strong>
-</div>
 
-<table mat-table *ngIf="dataSource.data.length > 0" [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-  <ng-container matColumnDef="title">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tarea </th>
-    <td mat-cell *matCellDef="let todo"> <strong>{{todo.title}}</strong> </td>
-  </ng-container>
-
-  <ng-container matColumnDef="priority">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prioridad </th>
-    <td mat-cell *matCellDef="let todo">
-      <div *ngIf="todo.priority === 0">  
-        <mat-icon class="green-color">error</mat-icon> 
-        <mat-icon>error_outline</mat-icon>
-        <mat-icon>error_outline</mat-icon>     
-      </div>
-      <div *ngIf="todo.priority === 1">  
-        <mat-icon class="orange-color">error</mat-icon> 
-        <mat-icon class="orange-color">error</mat-icon>
-        <mat-icon >error_outline</mat-icon>     
-      </div>
-      <div *ngIf="todo.priority === 2" class="red-color">   
-        <mat-icon>error</mat-icon>
-        <mat-icon>error</mat-icon>
-        <mat-icon>error</mat-icon>     
-      </div>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="state">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
-    <td mat-cell *matCellDef="let todo"> 
-      <div *ngIf="todo.state === 0"> Pendiente </div>
-      <div *ngIf="todo.state === 1"> En proceso </div>
-      <div *ngIf="todo.state === 2"> Hecho </div>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="created_at">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Creada en </th>
-    <td mat-cell *matCellDef="let todo"> {{todo.created_at.toMillis() | date:'yyyy/MM/dd h:mm:ss a'}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="action">
-    <th mat-header-cell *matHeaderCellDef> Acciones </th>
-    <td mat-cell *matCellDef="let todo"> 
-      <button mat-icon-button (click)="edit(todo, 'todos')">
-        <mat-icon color="primary">create</mat-icon> 
-      </button>
-      <button mat-icon-button (click)="delete(todo, 'todos')">
-        <mat-icon color="warn">delete</mat-icon> 
-      </button>
-      <button mat-icon-button (click)="done(todo)" [disabled]="todo.state === 0">
-        <mat-icon [ngClass]="todo.state === 0 ? 'gray-color':'green-color'">check_circle</mat-icon> 
-      </button>
-    </td>
-  </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
-
-<div *ngIf="dataSource_finished.data.length == 0" class="no-todos">
-  <strong>¡No hay tareas completadas!</strong>
-</div>
-
-<table mat-table *ngIf="dataSource_finished.data.length > 0" [dataSource]="dataSource_finished" matSort class="mat-elevation-z8">
-
-  <ng-container matColumnDef="title">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tarea </th>
-    <td mat-cell *matCellDef="let todo"> <strong>{{todo.title}}</strong> </td>
-  </ng-container>
-
-  <ng-container matColumnDef="priority">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prioridad </th>
-    <td mat-cell *matCellDef="let todo">
-      <div *ngIf="todo.priority === 0">  
-        <mat-icon class="green-color">error</mat-icon> 
-        <mat-icon>error_outline</mat-icon>
-        <mat-icon>error_outline</mat-icon>     
-      </div>
-      <div *ngIf="todo.priority === 1">  
-        <mat-icon class="orange-color">error</mat-icon> 
-        <mat-icon class="orange-color">error</mat-icon>
-        <mat-icon >error_outline</mat-icon>     
-      </div>
-      <div *ngIf="todo.priority === 2" class="red-color">   
-        <mat-icon>error</mat-icon>
-        <mat-icon>error</mat-icon>
-        <mat-icon>error</mat-icon>     
-      </div>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="state">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
-    <td mat-cell *matCellDef="let todo"> 
-      <div *ngIf="todo.state === 0"> Pendiente </div>
-      <div *ngIf="todo.state === 1"> En proceso </div>
-      <div *ngIf="todo.state === 2"> Hecho </div>
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="created_at">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Creada en </th>
-    <td mat-cell *matCellDef="let todo"> {{todo.created_at.toMillis() | date:'yyyy/MM/dd h:mm:ss a'}} </td>
-  </ng-container>
- 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns_done"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns_done;"></tr>
-</table>
   

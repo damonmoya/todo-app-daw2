@@ -6,6 +6,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {MatDialog} from '@angular/material/dialog';
 import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog.component';
 import { AngularFirestore } from '@angular/fire/firestore';
+import {MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,10 @@ export class AppComponent implements OnInit {
   done_todos = this.store.collection('done_todos').valueChanges({ idField: 'id' });
   dataSource: any;
   dataSource_finished: any;
+  horizontalPosition: MatSnackBarHorizontalPosition = 'right';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(private dialog: MatDialog, private store: AngularFirestore) {
+  constructor(private dialog: MatDialog, private _snackBar: MatSnackBar, private store: AngularFirestore) {
     this.dataSource = new MatTableDataSource();
     this.todos.subscribe((task: any)=> {
       ​​​​​this.dataSource = new MatTableDataSource(task);
@@ -50,6 +53,8 @@ export class AppComponent implements OnInit {
 
   delete(task: Task, list: string): void {
     this.store.collection(list).doc(task.id).delete();
+    const msg = "Tarea '" + task.title + "' eliminada";
+    this.showAlert(msg);
   }
 
   edit(task: Task, list: string): void {
@@ -64,6 +69,8 @@ export class AppComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
       if (!result.cancel) {
         this.store.collection(list).doc(task.id).update(task);
+        const msg = "Tarea '" + result.task.title + "' editada";
+        this.showAlert(msg);
       }  
       this.refreshTodoTable();
     })
@@ -82,6 +89,8 @@ export class AppComponent implements OnInit {
       .subscribe((result: TaskDialogResult) => {
         result.task.created_at = new Date();
         this.store.collection('todos').add(result.task);
+        const msg = "Tarea '" + result.task.title + "' creada";
+        this.showAlert(msg);
       })
   }
 
@@ -90,6 +99,8 @@ export class AppComponent implements OnInit {
     this.store.collection('todos').doc(task.id).update(task);
     this.store.collection('todos').doc(task.id).delete();
     this.store.collection('done_todos').add(task);
+    const msg = "Tarea '" + task.title + "' completada";
+    this.showAlert(msg);
   }
 
   restore(task: Task): void {
@@ -97,6 +108,8 @@ export class AppComponent implements OnInit {
     this.store.collection('done_todos').doc(task.id).update(task);
     this.store.collection('done_todos').doc(task.id).delete();
     this.store.collection('todos').add(task);
+    const msg = "Tarea '" + task.title + "' restaurada";
+    this.showAlert(msg);
   }
 
   refreshTodoTable() {
@@ -111,6 +124,14 @@ export class AppComponent implements OnInit {
       ​​​​​this.dataSource_finished = new MatTableDataSource(task);
       this.dataSource_finished.sort = this.sorter2;
     })
+  }
+
+  showAlert(msg: string): void {
+    this._snackBar.open(msg, 'OK', {
+      duration: 3000,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+    });
   }
 
 }

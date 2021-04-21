@@ -10,11 +10,14 @@
     <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="100px" class="no-todos">
       <h1>Tareas pendientes</h1>
       <div class="create-btn">
-        <button mat-flat-button color="primary" (click)="newTask()">
+        <button mat-flat-button color="primary" (click)="newTask()" 
+        matTooltip="Crear una nueva tarea" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500" [matTooltipPosition]="'left'">
           <mat-icon>add</mat-icon> Nueva Tarea
         </button>
       </div>
-    </div>   
+    </div>  
+    
+    <mat-divider></mat-divider>
     
     <div *ngIf="dataSource.data.length == 0" class="no-todos">
       <strong>¡No hay tareas por hacer!</strong>
@@ -65,13 +68,13 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let todo"> 
-          <button mat-icon-button (click)="edit(todo, 'todos')">
+          <button mat-icon-button (click)="edit(todo, 'todos')" matTooltip="Editar tarea" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
             <mat-icon color="primary">create</mat-icon> 
           </button>
-          <button mat-icon-button (click)="delete(todo, 'todos')">
+          <button mat-icon-button (click)="delete(todo, 'todos')" matTooltip="Eliminar tarea" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
             <mat-icon color="warn">delete</mat-icon> 
           </button>
-          <button mat-icon-button (click)="done(todo)" [disabled]="todo.state === 0">
+          <button mat-icon-button (click)="done(todo)" [disabled]="todo.state === 0" matTooltip="Pasar tarea a 'Hecho'" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
             <mat-icon [ngClass]="todo.state === 0 ? 'gray-color':'green-color'">check_circle</mat-icon> 
           </button>
         </td>
@@ -90,6 +93,8 @@
     <div *ngIf="dataSource_finished.data.length == 0" class="no-todos">
       <strong>¡No hay tareas completadas!</strong>
     </div>
+
+    <mat-divider></mat-divider>
     
     <table mat-table *ngIf="dataSource_finished.data.length > 0" [dataSource]="dataSource_finished" matSort #sorter2="matSort" class="mat-elevation-z8">
     
@@ -136,10 +141,10 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let todo"> 
-          <button mat-icon-button (click)="restore(todo)">
+          <button mat-icon-button (click)="restore(todo)" matTooltip="Restaurar tarea a 'En proceso'" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
             <mat-icon class="orange-color">restore</mat-icon> 
           </button>
-          <button mat-icon-button (click)="delete(todo, 'done_todos')">
+          <button mat-icon-button (click)="delete(todo, 'done_todos')" matTooltip="Eliminar tarea" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500">
             <mat-icon color="warn">delete</mat-icon> 
           </button>
         </td>

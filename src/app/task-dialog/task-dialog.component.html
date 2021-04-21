@@ -1,5 +1,5 @@
 <h1 *ngIf="data.creating">Nueva Tarea</h1>
-<h1 *ngIf="data.editing">Editar Tarea '{{data.task.title}}'</h1>
+<h1 *ngIf="data.editing">Editar Tarea '{{data.task_title}}'</h1>
 <h1 *ngIf="data.deleting">Eliminar Tarea '{{data.task.title}}'</h1>
 <h1 *ngIf="data.doning">Completar Tarea '{{data.task.title}}'</h1>
 <h1 *ngIf="data.recovering">Restaurar Tarea '{{data.task.title}}'</h1>
@@ -32,11 +32,61 @@
   <h2 *ngIf="data.recovering">¿Desea restaurar la tarea?</h2>
 </div>
 
-<div mat-dialog-actions>
-    <button 
+<div *ngIf="data.guide">
+  <h1>Guía de uso</h1>
+  <p>
+    Esta aplicación consiste en una lista de tareas que se muestran como <strong>Pendientes</strong> o <strong>En proceso</strong>. Una 
+    segunda lista muestra el histórico de tareas <strong>completadas</strong>. Cada tarea cuenta con un <strong>título</strong>, 
+    <strong>prioridad</strong>, <strong>estado</strong> y <strong>fecha de creación</strong>.
+  </p>
+
+  <mat-divider></mat-divider>
+
+  <h2>Crear nuevas tareas</h2>
+  <p>
+    A la hora de crear nuevas tareas, se debe introducir un <strong>título</strong> para la tarea, y seleccionar la <strong>prioridad</strong>
+    de dicha tarea. Al crearse la nueva tarea, está se encontrará en el estado de <strong>Pendiente</strong>.
+  </p>
+  <p>
+    Puedes crear nuevas tareas haciendo clic en el siguiente botón:
+  </p>
+  <button mat-flat-button color="primary">
+    <mat-icon>add</mat-icon> Nueva Tarea
+  </button>
+  
+  <mat-divider></mat-divider>
+
+  <h2>Editar/eliminar tareas</h2>
+  <p>
+    Si quieres editar una tarea, haz clic sobre el botón de editar <mat-icon color="primary">create</mat-icon>. Una nueva ventana de formulario aparecerá y
+    cargará los datos de la tarea en cuestión. Se podrá editar el <strong>título</strong>, la <strong>prioridad</strong> y el <strong>estado</strong>
+    En el caso de que se desee eliminar una tarea, haz clic en el botón de eliminar <mat-icon color="warn">delete</mat-icon>.
+  </p>
+
+  <mat-divider></mat-divider>
+
+  <h2>Completar/restaurar tareas</h2>
+  <p>
+    Las tareas que se encuentran en estado <strong>En proceso</strong>, tendrán habilitado el botón para establecer dicha tarea como <strong>Hecho</strong>
+    <mat-icon class="green-color">check_circle</mat-icon>. Las tareas que pasan a este estado se trasladarán a un histórico con todas las tareas completadas.
+  </p>
+  <p>
+    Las tareas completadas solo presentan opciones para ser eliminadas o restauradas. Al restaurar una tarea, está volverá a cambiar su estado como <strong>En proceso</strong>,
+    pasando a formar parte nuevamente del primer listado de tareas por hacer, abandonando el histórico. Para restaurar una tarea, haz clic en el botón 
+    <mat-icon class="orange-color">restore</mat-icon>  
+  </p>
+</div>
+
+<div mat-dialog-actions align="center">
+    <button *ngIf="!data.guide"
       mat-button [disabled]="data.task.title === ''" 
       [mat-dialog-close]="{ task: data.task }"
       color="primary">OK
+    </button>
+    <button *ngIf="data.guide"
+      mat-button 
+      [mat-dialog-close]="true"
+      color="primary">¡Entendido!
     </button>
     <button *ngIf="data.creating" mat-button [mat-dialog-close]="true" color="accent">Cancelar</button>
     <button *ngIf="data.editing || data.deleting || data.doning || data.recovering" mat-button [mat-dialog-close]="{ task: data.task, cancel: true }" color="accent">Cancelar</button>

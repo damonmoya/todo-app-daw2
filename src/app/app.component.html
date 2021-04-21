@@ -1,6 +1,7 @@
 <mat-toolbar color="primary">
   <mat-icon>check_box</mat-icon>
   <span>Todo List</span>
+  <button mat-button (click)="showGuide()">¿Cómo se usa esta aplicación?</button>
 </mat-toolbar>
 
 <div fxLayout="row" fxLayoutAlign=" start" fxLayoutGap="100px" class="no-todos">
@@ -8,7 +9,7 @@
     <mat-card class="left-list">
 
     <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="100px" class="no-todos">
-      <h1>Tareas pendientes</h1>
+      <h1>Tareas por hacer</h1>
       <div class="create-btn">
         <button mat-flat-button color="primary" (click)="newTask()" 
         matTooltip="Crear una nueva tarea" [matTooltipShowDelay]="500" [matTooltipHideDelay]="500" [matTooltipPosition]="'left'">

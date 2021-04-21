@@ -35,6 +35,8 @@ export interface TaskDialogData {
   deleting: boolean;
   doning: boolean;
   recovering: boolean;
+  guide: boolean;
+  task_title: string;
 }
 
 export interface TaskDialogResult {

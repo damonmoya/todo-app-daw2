@@ -75,6 +75,7 @@ export class AppComponent implements OnInit {
       width: '270px',
       data: {
         task,
+        task_title: task.title,
         editing: true
       }
     });
@@ -108,24 +109,12 @@ export class AppComponent implements OnInit {
   }
 
   done(task: Task): void {
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      disableClose: true,
-      width: '270px',
-      data: {
-        task,
-        doning: true
-      }
-    });
-    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
-      if (!result.cancel) {
-        task.state = 2;
-        this.store.collection('todos').doc(task.id).update(task);
-        this.store.collection('todos').doc(task.id).delete();
-        this.store.collection('done_todos').add(task);
-        const msg = "Tarea '" + task.title + "' completada";
-        this.showAlert(msg);
-      }  
-    })
+    task.state = 2;
+    this.store.collection('todos').doc(task.id).update(task);
+    this.store.collection('todos').doc(task.id).delete();
+    this.store.collection('done_todos').add(task);
+    const msg = "Tarea '" + task.title + "' completada";
+    this.showAlert(msg);
   }
 
   restore(task: Task): void {
@@ -147,7 +136,16 @@ export class AppComponent implements OnInit {
         this.showAlert(msg);
       }  
     })
-    
+  }
+
+  showGuide(): void{
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
+      width: '720px',
+      data: {
+        guide: true
+      }
+    });
   }
 
   refreshTodoTable() {

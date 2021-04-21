@@ -7,9 +7,6 @@ import {MatDialog} from '@angular/material/dialog';
 import { TaskDialogComponent, TaskDialogResult } from './task-dialog/task-dialog.component';
 import { AngularFirestore } from '@angular/fire/firestore';
 
-var d = new Date();
-d.setDate(d.getDate() - 1);
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -24,7 +21,15 @@ export class AppComponent implements OnInit {
 
   constructor(private dialog: MatDialog, private store: AngularFirestore) {
     this.dataSource = new MatTableDataSource();
+    this.todos.subscribe((task: any)=> {
+      ​​​​​this.dataSource = new MatTableDataSource(task);
+      this.dataSource.sort = this.sorter1;
+    })
     this.dataSource_finished = new MatTableDataSource();
+    this.done_todos.subscribe((task: any)=> {
+      ​​​​​this.dataSource_finished = new MatTableDataSource(task);
+      this.dataSource_finished.sort = this.sorter2;
+    })
   }
 
   displayedColumns: string[] = ['title', 'priority', 'state', 'created_at', 'action'];
@@ -39,8 +44,6 @@ export class AppComponent implements OnInit {
   sorter2: MatSort = new MatSort;
 
   ngOnInit() {
-    this.refreshTodoTable()
-    this.refreshDoneTable()
     this.refreshTodoTable()
     this.refreshDoneTable()
   }
@@ -76,8 +79,10 @@ export class AppComponent implements OnInit {
     });
     dialogRef
       .afterClosed()
-      .subscribe((result: TaskDialogResult) => 
-        this.store.collection('todos').add(result.task));
+      .subscribe((result: TaskDialogResult) => {
+        result.task.created_at = new Date();
+        this.store.collection('todos').add(result.task);
+      })
   }
 
   done(task: Task): void {
@@ -85,8 +90,6 @@ export class AppComponent implements OnInit {
     this.store.collection('todos').doc(task.id).update(task);
     this.store.collection('todos').doc(task.id).delete();
     this.store.collection('done_todos').add(task);
-    this.refreshTodoTable();
-    this.refreshDoneTable();
   }
 
   restore(task: Task): void {
@@ -94,8 +97,6 @@ export class AppComponent implements OnInit {
     this.store.collection('done_todos').doc(task.id).update(task);
     this.store.collection('done_todos').doc(task.id).delete();
     this.store.collection('todos').add(task);
-    this.refreshTodoTable();
-    this.refreshDoneTable();
   }
 
   refreshTodoTable() {

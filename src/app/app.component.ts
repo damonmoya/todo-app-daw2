@@ -52,9 +52,21 @@ export class AppComponent implements OnInit {
   }
 
   delete(task: Task, list: string): void {
-    this.store.collection(list).doc(task.id).delete();
-    const msg = "Tarea '" + task.title + "' eliminada";
-    this.showAlert(msg);
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
+      width: '270px',
+      data: {
+        task,
+        deleting: true
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+      if (!result.cancel) {
+        this.store.collection(list).doc(task.id).delete();
+        const msg = "Tarea '" + task.title + "' eliminada";
+        this.showAlert(msg);
+      }  
+    })
   }
 
   edit(task: Task, list: string): void {
@@ -81,7 +93,8 @@ export class AppComponent implements OnInit {
       disableClose: true,
       width: '270px',
       data: {
-        task: { title: '', priority: 0, state: 0, created_at: new Date()}
+        task: { title: '', priority: 0, state: 0, created_at: new Date()},
+        creating: true
       }
     });
     dialogRef
@@ -95,21 +108,46 @@ export class AppComponent implements OnInit {
   }
 
   done(task: Task): void {
-    task.state = 2;
-    this.store.collection('todos').doc(task.id).update(task);
-    this.store.collection('todos').doc(task.id).delete();
-    this.store.collection('done_todos').add(task);
-    const msg = "Tarea '" + task.title + "' completada";
-    this.showAlert(msg);
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
+      width: '270px',
+      data: {
+        task,
+        doning: true
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+      if (!result.cancel) {
+        task.state = 2;
+        this.store.collection('todos').doc(task.id).update(task);
+        this.store.collection('todos').doc(task.id).delete();
+        this.store.collection('done_todos').add(task);
+        const msg = "Tarea '" + task.title + "' completada";
+        this.showAlert(msg);
+      }  
+    })
   }
 
   restore(task: Task): void {
-    task.state = 1;
-    this.store.collection('done_todos').doc(task.id).update(task);
-    this.store.collection('done_todos').doc(task.id).delete();
-    this.store.collection('todos').add(task);
-    const msg = "Tarea '" + task.title + "' restaurada";
-    this.showAlert(msg);
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      disableClose: true,
+      width: '270px',
+      data: {
+        task,
+        recovering: true
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+      if (!result.cancel) {
+        task.state = 1;
+        this.store.collection('done_todos').doc(task.id).update(task);
+        this.store.collection('done_todos').doc(task.id).delete();
+        this.store.collection('todos').add(task);
+        const msg = "Tarea '" + task.title + "' restaurada";
+        this.showAlert(msg);
+      }  
+    })
+    
   }
 
   refreshTodoTable() {

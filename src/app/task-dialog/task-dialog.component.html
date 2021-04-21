@@ -1,9 +1,15 @@
-<mat-form-field>
+<h1 *ngIf="data.creating">Nueva Tarea</h1>
+<h1 *ngIf="data.editing">Editar Tarea '{{data.task.title}}'</h1>
+<h1 *ngIf="data.deleting">Eliminar Tarea '{{data.task.title}}'</h1>
+<h1 *ngIf="data.doning">Completar Tarea '{{data.task.title}}'</h1>
+<h1 *ngIf="data.recovering">Restaurar Tarea '{{data.task.title}}'</h1>
+
+<mat-form-field *ngIf="data.creating || data.editing">
     <mat-label>Nombre de la tarea</mat-label>
     <input matInput placeholder="Nombre de la tarea..." [(ngModel)]="data.task.title" required>
 </mat-form-field>
 
-<mat-form-field appearance="fill">
+<mat-form-field *ngIf="data.creating || data.editing" appearance="fill">
   <mat-label>Prioridad</mat-label>
   <mat-select required [(ngModel)]="data.task.priority">
     <mat-option [value]="0">Baja</mat-option>
@@ -20,12 +26,18 @@
   </mat-select>
 </mat-form-field>
 
+<div *ngIf="data.deleting || data.doning || data.recovering">
+  <h2 *ngIf="data.deleting">¿Desea borrar la tarea?</h2>
+  <h2 *ngIf="data.doning">¿Desea completar la tarea?</h2>
+  <h2 *ngIf="data.recovering">¿Desea restaurar la tarea?</h2>
+</div>
+
 <div mat-dialog-actions>
     <button 
       mat-button [disabled]="data.task.title === ''" 
       [mat-dialog-close]="{ task: data.task }"
       color="primary">OK
     </button>
-    <button *ngIf="!data.editing" mat-button [mat-dialog-close]="true" color="accent">Cancelar</button>
-    <button *ngIf="data.editing" mat-button [mat-dialog-close]="{ task: data.task, cancel: true }" color="accent">Cancelar</button>
+    <button *ngIf="data.creating" mat-button [mat-dialog-close]="true" color="accent">Cancelar</button>
+    <button *ngIf="data.editing || data.deleting || data.doning || data.recovering" mat-button [mat-dialog-close]="{ task: data.task, cancel: true }" color="accent">Cancelar</button>
 </div>
